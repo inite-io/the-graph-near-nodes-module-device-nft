@@ -1,0 +1,17 @@
+specVersion: 0.0.1
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: near
+    name: IniteNear
+    network: near-testnet
+    source:
+      account: "dev-1645530691033-28672371428250"
+    mapping:
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - ExampleEntity
+      receiptHandlers:
+        - handler: handleReceipt
+      file: ./src/mapping.ts
