@@ -21,12 +21,31 @@ function handleAction(
   const functionCall = action.toFunctionCall();
   const methodName = functionCall.methodName;
 
-  if(methodName == "mint_nft") {
-    log.info('this is mint_nft triggered', []);
+  // only for debugging purposes
+  if (methodName) {
+    log.info("methodName {}", [methodName]);
   }
-  
-  if (methodName == "buy") {
-    const buyer = actionReceipt.signerId;
+
+  if (methodName == "buy" || methodName == "nft_transfer") {
+    let buyer: string = "";
+    if (methodName == "buy") {
+      buyer = actionReceipt.signerId;
+    }
+    if (methodName == "nft_transfer") {
+      const args = json.try_fromBytes(functionCall.args).value;
+      const receiver = args.toObject().get("receiver_id");
+      if (receiver) {
+        buyer = receiver.toString(); 
+      } else {
+        // do nothing in case we have no receiver
+        return;
+      }
+    }
+
+    if (!buyer) {
+      // do nothing in case we have no buyer
+      return;
+    }
     log.info('buyer: {}', [buyer]);
 
     const args = json.try_fromBytes(functionCall.args).value;
