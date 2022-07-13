@@ -1,6 +1,8 @@
 type NFTToken @entity {
   id: ID!
   owner: User!
+  on_sale: Boolean!
+  price: BigInt!
   last_change: BigInt!
 }
 

@@ -51,6 +51,24 @@ export class NFTToken extends Entity {
     this.set("owner", Value.fromString(value));
   }
 
+  get on_sale(): boolean {
+    let value = this.get("on_sale");
+    return value!.toBoolean();
+  }
+
+  set on_sale(value: boolean) {
+    this.set("on_sale", Value.fromBoolean(value));
+  }
+
+  get price(): BigInt {
+    let value = this.get("price");
+    return value!.toBigInt();
+  }
+
+  set price(value: BigInt) {
+    this.set("price", Value.fromBigInt(value));
+  }
+
   get last_change(): BigInt {
     let value = this.get("last_change");
     return value!.toBigInt();
