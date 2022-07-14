@@ -2,7 +2,7 @@ type NFTToken @entity {
   id: ID!
   owner: User!
   on_sale: Boolean!
-  price: BigInt!
+  price: String
   last_change: BigInt!
 }
 

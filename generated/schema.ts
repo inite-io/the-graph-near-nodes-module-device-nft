@@ -60,13 +60,21 @@ export class NFTToken extends Entity {
     this.set("on_sale", Value.fromBoolean(value));
   }
 
-  get price(): BigInt {
+  get price(): string | null {
     let value = this.get("price");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set price(value: BigInt) {
-    this.set("price", Value.fromBigInt(value));
+  set price(value: string | null) {
+    if (!value) {
+      this.unset("price");
+    } else {
+      this.set("price", Value.fromString(<string>value));
+    }
   }
 
   get last_change(): BigInt {

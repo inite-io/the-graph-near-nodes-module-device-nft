@@ -21,6 +21,8 @@ function handleAction(
   const functionCall = action.toFunctionCall();
   const methodName = functionCall.methodName;
 
+  let price: string = "0";
+
   // only for debugging purposes
   if (methodName) {
     log.info("methodName {}", [methodName]);
@@ -33,6 +35,7 @@ function handleAction(
     // in case of buy, the buyer is the sender of the transaction
     if (methodName == "buy") {
       buyer = actionReceipt.signerId;
+      price = functionCall.deposit.toString();
     }
 
     // in case of transfer `buyer` var is a receiver (the one who gets the transfer)
@@ -52,6 +55,14 @@ function handleAction(
       buyer = actionReceipt.signerId;
     }
 
+    if (methodName == "resell") {
+      const args = json.try_fromBytes(functionCall.args).value;
+      const argPrice = args.toObject().get("price");
+      if (argPrice) {
+        price = argPrice.toString();
+      }
+    }
+
     // no buyer always means that the transaction is not related to NFT
     if (!buyer) {
       // do nothing in case we have no buyer
@@ -63,6 +74,10 @@ function handleAction(
     const tokenId = args.toObject().get("token_id");
     const toBeSold = methodName == "resell";
     
+    if (price) {
+      log.info('price: {}', [price.toString()]);
+    }
+
     // for debug purposes to check if all is fine with sell operations
     log.info('to be sold: {}', [toBeSold.toString()]);
 
@@ -73,12 +88,14 @@ function handleAction(
       if (token) {
         token.owner = buyer.toString();
         token.last_change = BigInt.fromU64(timestamp);
+        token.price = price.toString();
         token.on_sale = toBeSold;
       } else {
         // create new token with new owner (when buy happened)
         token = new NFTToken(tokenId.toString());
         token.owner = buyer.toString();
         token.last_change = BigInt.fromU64(timestamp);
+        token.price = price.toString();
         token.on_sale = toBeSold;
       }
       token.save();
